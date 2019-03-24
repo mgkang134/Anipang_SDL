@@ -11,6 +11,8 @@ using namespace std;
 extern map<string, map<int, SDL_Texture*>>* imageLibrary;
 extern SDL_Renderer* gRenderer;
 extern SDL_Texture* gBackgroundTexture;
+extern const int MAP_POSITION_X;
+extern const int MAP_POSITION_Y;
 
 Item::Item(int xPos, int yPos)
 {
@@ -105,8 +107,8 @@ void Item::setYBefore()
 }
 
 void Item::updateRect() {
-	rect.x = x;
-	rect.y = y;
+	rect.x = x + MAP_POSITION_X;
+	rect.y = y + MAP_POSITION_Y;
 		
 }
 
