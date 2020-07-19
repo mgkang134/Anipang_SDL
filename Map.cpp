@@ -1,17 +1,19 @@
 #include <Map.h>
 #include <Item.h>
 #include <main.h>
-
+#include <algorithm>
 using namespace std;
 
 extern map<string, map<int, SDL_Texture*>>* imageLibrary;
 extern SDL_Texture* gBackgroundTexture;
 extern SDL_Renderer* gRenderer;
-extern SDL_Surface* gScreenSurface;
 extern SDL_Window* gWindow;
 extern SDL_Rect* backgroundRect;
 extern SDL_Texture* gScreenBackgroundTexture;
-extern SDL_Texture* gProgressBar;
+
+
+extern SDL_Texture* gComboTimerBar;
+extern SDL_Texture* gComboTimerBarEmpty;
 extern SDL_Texture* gComboText;
 extern SDL_Texture* gComboTimerText;
 extern SDL_Texture* gComboIcon;
@@ -37,7 +39,7 @@ extern const int ITEM_HEIGHT;
 extern const int SCREEN_TICKS_PER_FRAME;
 extern const int SCREEN_FPS;
 extern const int MAP_SIZE;
-extern const unsigned int COMBO_DELAY;
+extern unsigned int COMBO_DELAY;
 
 extern void close();
 
@@ -102,13 +104,23 @@ Map::~Map()
 void Map::resetComboLevel()
 {
 	comboLevel = 0;
+	COMBO_DELAY = 2000;
 }
 
 void Map::incleaseComboLevel()
 {
-	if (comboLevel <= 4)			//콤보레벨은 최대 5이다.
+	
+	if (comboLevel < 5) {			//콤보레벨은 최대 5이다.
 		comboLevel++;
-
+		switch (comboLevel) {
+		case 3:
+			COMBO_DELAY -= 500;
+			break;
+		case 4:
+			COMBO_DELAY -= 500;
+		}
+		COMBO_DELAY;
+	}
 }
 
 void Map::drawComboLevel() {
@@ -128,13 +140,7 @@ void Map::drawComboLevel() {
 
 void Map::setComboTimer(unsigned int time)		//time -> 0 ~ COMBO_DELAY(2000) ms
 {
-	if (comboLevel <= 3)							//combo level 3 ~ 5,  3-> 1sec; 4->0.7sec, 5->0.5sec
-		comboTimer = time / 20;						//percent value
-	else if (comboLevel == 4)
-		comboTimer = time / 15;
-	else if (comboLevel == 5)
-		comboTimer = time / 10;
-
+		comboTimer = (float)time / COMBO_DELAY * 100;					//comboTimer값은 퍼센트 수치이다.
 }
 
 void Map::hintImageToNormal()
@@ -178,11 +184,14 @@ void Map::drawAnimalCounterIcon() {
 
 void Map::drawComboTimer() {
 	SDL_Rect rect;
-	rect.x = MAP_WIDTH + MAP_POSITION_X + 20;
-	rect.y = MAP_POSITION_Y + (490 * comboTimer / 100);
-	rect.w = 70;
-	rect.h = 70;
-	SDL_RenderCopy(gRenderer, gProgressBar, NULL, &rect);
+	rect.x = MAP_WIDTH + MAP_POSITION_X + 20;			//x, y값은 동일
+	rect.y = MAP_POSITION_Y;
+	rect.w = 49;
+	rect.h = 490;
+	SDL_RenderCopy(gRenderer, gComboTimerBar, NULL, &rect);
+	rect.w = 49;
+	rect.h = (490 * comboTimer / 100);
+	SDL_RenderCopy(gRenderer, gComboTimerBarEmpty, NULL, &rect);
 }
 
 void Map::renderScreen() {

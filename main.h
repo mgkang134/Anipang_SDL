@@ -9,7 +9,7 @@ extern const int MAP_POSITION_X;
 extern const int MAP_POSITION_Y;
 extern const int MAP_WIDTH;
 extern const int MAP_HEIGHT;
-extern const unsigned int COMBO_DELAY;
+extern unsigned int COMBO_DELAY;
 
 
 enum Direction
